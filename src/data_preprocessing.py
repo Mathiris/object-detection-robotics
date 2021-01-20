@@ -75,7 +75,7 @@ def resize_image(path_image):
     print("[!] - All images have been resized!")
     
 
-def txt_to_csv(path_image):
+def txt_to_csv(path_image, path_label):
     """Iterates through all .txt files (get from OIDV4_Toolkit) in a given directory and combines
     them in a single Pandas dataframe.
 
@@ -91,7 +91,7 @@ def txt_to_csv(path_image):
 
     txt_list = []
 
-    for txt_file in glob.glob(path_image + '/*.txt'):
+    for txt_file in glob.glob(path_label + '/*.txt'):
         f = open(txt_file, "r")
         txt = f.readlines()
         txt = str(txt[0]).split()
@@ -100,8 +100,6 @@ def txt_to_csv(path_image):
         txt_file = txt_file[-1].replace("txt", "jpg")
 
         img = cv2.imread(path_image+'/'+txt_file, cv2.IMREAD_UNCHANGED)
-        print(img)
-        print(type(img))
 
         filename = txt_file
         label = txt[0] 
@@ -127,14 +125,19 @@ def txt_to_csv(path_image):
 
     column_name = ['filename', 'label', 'width', 'height', 'xmin', 'ymin', 'xmax', 'ymax']
     txt_df = pd.DataFrame(txt_list, columns=column_name)
+    txt_df = txt_df.drop_duplicates()
+    txt_df = txt_df.reset_index(drop=True)
     
     print(" > [+] - Create dataframe with all data annotations for each image.")
 
     return txt_df
 
-rename_label(STOPSIGN_TRAIN_LABEL)
-resize_bounding_box(STOPSIGN_TRAIN_LABEL, STOPSIGN_TRAIN_IMG)
-resize_image(STOPSIGN_TRAIN_IMG)
-# stopSign_df = txt_to_csv(STOPSIGN_TRAIN_LABEL)
+# rename_label(STOPSIGN_TRAIN_LABEL)
+# resize_bounding_box(STOPSIGN_TRAIN_LABEL, STOPSIGN_TRAIN_IMG)
+# resize_image(STOPSIGN_TRAIN_IMG)
+stopSign_df = txt_to_csv(STOPSIGN_TRAIN_IMG, STOPSIGN_TRAIN_LABEL)
 
-# print(stopSign_df)
+print(stopSign_df)
+print(stopSign_df.head(40))
+
+

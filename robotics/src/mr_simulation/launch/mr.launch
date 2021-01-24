@@ -1,0 +1,35 @@
+<launch>
+
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="state_gui" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="world_name" default="empty"/>
+  
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)" />
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="verbose" value="true" />
+    <arg name="world_name" value="$(find mr_simulation)/worlds/$(arg world_name).world"/>
+  </include>
+
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="log" args="-urdf -model mr -param robot_description -x 1 -z 1 "/>
+
+
+  <include file="$(find mr_description)/launch/robot.launch">
+    <arg name="use_gui" value="$(arg state_gui)"/>
+  </include>
+
+  <rosparam file="$(find mr_description)/config/controllers.yaml" command="load" ns="gazebo"/>
+
+  <rosparam file="$(find mr_description)/config/PIDs.yaml" command="load" ns="gazebo"/>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="gazebo" output="log" args="joint_state_controller
+    lwheel_traction_controller
+    rwheel_traction_controller
+    "/>
+
+</launch>

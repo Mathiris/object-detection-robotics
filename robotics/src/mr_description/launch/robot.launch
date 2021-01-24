@@ -1,0 +1,16 @@
+<launch>
+
+    <arg name="use_gui" default="false" />
+
+    <param name="robot_description" command="$(find xacro)/xacro
+        '$(find mr_description)/urdf/mr.xacro'"/>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <param name="/use_gui" value="$(arg use_gui)"/>
+        <rosparam param="/source_list">["/gazebo/joint_states"]</rosparam>
+    </node>
+
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+</launch>

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <robotNamespace>/gazebo</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="lwheel">
+    <mu1>2147483647</mu1>
+    <mu2>2147483647</mu2>
+    <kp value="10000000.0" />
+    <kd value="1.0"/>
+    <material>Gazebo/Purple</material>
+  </gazebo>
+  <gazebo reference="rwheel">
+    <mu1>2147483647</mu1>
+    <mu2>2147483647</mu2>
+    <kp value="10000000.0" />
+    <kd value="1.0"/>
+    <material>Gazebo/Purple</material>
+  </gazebo>
+
+  <gazebo reference="caster_part">
+    <mu1>0</mu1>
+    <mu2>0</mu2>
+    <material>Gazebo/Purple</material>
+  </gazebo>
+
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <gazebo reference="base_link_to_bump">
+	  <disableFixedJointLumping>true</disableFixedJointLumping>
+  </gazebo>
+
+  <xacro:macro name="own_transmission" params="name joint_name reduction actuator_name type_interface">
+    <transmission name="${name}">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint_name}">
+        <hardwareInterface>hardware_interface/${type_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${actuator_name}">
+        <hardwareInterface>hardware_interface/${type_interface}</hardwareInterface>
+        <mechanicalReduction>${reduction}</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
+  <xacro:own_transmission name="lwheel_traction" joint_name="base_to_lwheel" reduction="1" actuator_name="motor0" type_interface="VelocityJointInterface" />
+
+  <xacro:own_transmission name="rwheel_traction" joint_name="base_to_rwheel" reduction="1" actuator_name="motor1" type_interface="VelocityJointInterface" />
+</robot>

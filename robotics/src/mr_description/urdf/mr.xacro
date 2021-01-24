@@ -1,0 +1,32 @@
+<robot name="mr" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="PI" value="3.1415926535897931" />
+  <xacro:property name="BASE_LINK_WIDTH" value="0.1" />
+  <xacro:property name="BASE_LINK_RADIUS" value="0.3" />
+
+  <xacro:property name="BASE_LINK_MASS" value="30.0" />
+
+  <xacro:property name="WHEEL_LENGTH" value="0.05" />
+  <xacro:property name="WHEEL_RADIUS" value="0.1" />
+
+  <xacro:property name="WHEEL_MASS" value="2.0" />
+
+  <xacro:property name="BASE_LINK_TO_WHEEL_X" value="${BASE_LINK_RADIUS - 0.2}" />
+  <xacro:property name="BASE_LINK_TO_WHEEL_Y" value="${BASE_LINK_RADIUS -0.07}" />
+  <xacro:property name="BASE_LINK_TO_WHEEL_Z" value="${-BASE_LINK_WIDTH/2}" />
+
+  <xacro:property name="CASTER_WHEEL_RADIUS" value="0.15" />
+
+  <xacro:property name="CASTER_WHEEL_X" value="-0.18" />
+  <xacro:property name="CASTER_WHEEL_Y" value="0" />
+  <xacro:property name="CASTER_WHEEL_Z" value="${-BASE_LINK_WIDTH/2}" />
+
+  <xacro:property name="camera_link" value="0.05" /> 
+
+  <xacro:include filename="$(find mr_description)/urdf/mr.urdf" />
+
+  <xacro:include filename="$(find mr_description)/urdf/gazebo.xacro" />
+  
+  <xacro:include filename="$(find mr_description)/urdf/sensors.xacro" />
+
+</robot>

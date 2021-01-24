@@ -1,0 +1,10 @@
+<launch>
+
+    <arg name="use_gui" default="false" />
+    
+    <include file="$(find mr_description)/launch/robot.launch">
+        <arg name="use_gui" value="$(arg use_gui)"/>
+    </include>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mr_description)/rviz/urdf.rviz" />
+
+</launch>

@@ -1,0 +1,8 @@
+<launch>
+
+  <!-- Convert velocity twist to motor cmds thx to unicycle model -->
+  <node name="twist_to_cmd" pkg="mr_teleop" type="mr_teleop_node_cpp"/>
+
+  <node name="teleop" pkg="mr_teleop" type="teleop_twist_keyboard.py" output="screen"/>
+
+</launch>

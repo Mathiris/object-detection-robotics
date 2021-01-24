@@ -1,0 +1,165 @@
+<robot name="mr" 
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <material name="grey">
+    <color rgba="128 128 128 1"/>
+  </material>
+
+  <!-- Define inertial macro -->
+  <xacro:macro name="cuboid_inertia" params="XYZ RPY mass depth width height">
+    <inertial>
+      <origin xyz="${XYZ}" rpy="${RPY}" />
+      <mass value="${mass}" />
+      <inertia ixx="${mass*1/12*(width*width+height*height)}" ixy="0.0" ixz="0.0" iyy="${mass*1/12*(depth*depth+height*height)}" iyz="0.0" izz="${mass*1/12*(depth*depth+width*width)}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="cylinder_inertia" params="XYZ RPY mass radius length">
+    <inertial>
+      <origin xyz="${XYZ}" rpy="${RPY}" />
+      <mass value="${mass}" />
+      <inertia ixx="${mass*1.0/12.0*(3*radius*radius + length*length)}" ixy="0.0" ixz="0.0" iyy="${mass*1.0/12.0*(3*radius*radius + length*length)}" iyz="0.0" izz="${mass/2.0*(radius*radius)}" />
+    </inertial>
+  </xacro:macro>
+
+  <xacro:macro name="sphere_inertia" params="XYZ RPY mass radius">
+    <inertial>
+      <origin xyz="${XYZ}" rpy="${RPY}" />
+      <mass value="${mass}" />
+      <inertia ixx="${mass*2.0/5.0*radius*radius}" ixy="0.0" ixz="0.0" iyy="${mass*2.0/5.0*radius*radius}" iyz="0.0" izz="${mass*2.0/5.0*radius*radius}" />
+    </inertial>
+  </xacro:macro>
+
+  <!-- links macro -->
+  <xacro:macro name="cuboid_link" params="name XYZ RPY mass depth width height color">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${depth} ${width} ${height} "/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+        <material name="${color}"/>
+      </visual>
+
+      <collision>
+        <geometry>
+          <box size="${depth} ${width} ${height} "/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+      </collision>
+
+      <xacro:cuboid_inertia XYZ="${XYZ}" RPY="${RPY}" mass="${mass}" depth="${depth}" width="${width}" height="${height}"/>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="cylinder_link" params="name XYZ RPY mass radius length color">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+        <!--material name="${color}"/-->
+      </visual>
+
+      <collision>
+        <geometry>
+          <cylinder length="${length}" radius="${radius}"/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+      </collision>
+
+      <xacro:cylinder_inertia XYZ="${XYZ}" RPY="${RPY}" mass="${mass}" radius="${radius}" length="${length}"/>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="sphere_link" params="name XYZ RPY mass radius color">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <sphere radius="${radius}"/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+        <material name="${color}"/>
+      </visual>
+
+      <collision>
+        <geometry>
+          <sphere radius="${radius}"/>
+        </geometry>
+        <origin rpy="${RPY}" xyz="${XYZ}"/>
+      </collision>
+
+      <xacro:sphere_inertia XYZ="${XYZ}" RPY="${RPY}" mass="${mass}" radius="${radius}"/>
+    </link>
+  </xacro:macro>
+
+
+  <!-- Definition of the shape of the robot -->
+  <link name="base_link"/>
+
+  <xacro:cylinder_link name="base_link_r" XYZ="0 0 0" RPY="0 0 0" mass="${BASE_LINK_MASS}" radius="${BASE_LINK_RADIUS}" length="${BASE_LINK_WIDTH}" color="grey"/>
+
+  <joint name="base_link_to_real" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_link_r"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+    <link name="bumper_sensor">
+      <collision name="bumper_sensor_collision">
+        <geometry>
+          <cylinder length="${BASE_LINK_WIDTH}" radius="${BASE_LINK_RADIUS + 0.025}"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </collision>
+
+      <visual>
+        <geometry>
+          <cylinder length="${BASE_LINK_WIDTH}" radius="${BASE_LINK_RADIUS}"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+      </visual>
+
+      <xacro:cylinder_inertia XYZ="0 0 0" RPY="0 0 0" mass="0.1" radius="${BASE_LINK_RADIUS}" length="${BASE_LINK_WIDTH}"/>
+     </link>
+
+  <joint name="base_link_to_bump" type="fixed">
+    <parent link="base_link"/>
+    <child link="bumper_sensor"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:cylinder_link name="lwheel" XYZ="0 0 0" RPY="${PI/2} 0 ${PI}" mass="${WHEEL_MASS}" radius="${WHEEL_RADIUS}" length="${WHEEL_LENGTH}" color="grey"/>
+
+  <joint name="base_to_lwheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="lwheel"/>
+    <axis xyz="0 1 0" />
+    <origin xyz="${BASE_LINK_TO_WHEEL_X} ${BASE_LINK_TO_WHEEL_Y} ${BASE_LINK_TO_WHEEL_Z}" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:cylinder_link name="rwheel" XYZ="0 0 0" RPY="${PI/2} 0 0" mass="${WHEEL_MASS}" radius="${WHEEL_RADIUS}" length="${WHEEL_LENGTH}" color="grey"/>
+
+  <joint name="base_to_rwheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="rwheel"/>
+    <axis xyz="0 1 0" />
+    <origin xyz="${BASE_LINK_TO_WHEEL_X} ${-BASE_LINK_TO_WHEEL_Y} ${BASE_LINK_TO_WHEEL_Z}" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:sphere_link name="caster_part" XYZ="0 0 0" RPY="0 0 0" mass="${WHEEL_MASS}" radius="${WHEEL_RADIUS}" color="grey"/> 
+  <joint name="base_link_to_caster" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_part"/>
+    <origin xyz="${CASTER_WHEEL_X} ${CASTER_WHEEL_Y} ${CASTER_WHEEL_Z}" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:cuboid_link name="camera" XYZ="0 0 0" RPY="0 0 0" mass="0.01" depth="0.01" width="0.01" height="0.01" color="grey"/> 
+  <joint name="base_link_to_camera" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera"/>
+    <origin xyz="0 0 1" rpy="0 0 0"/>
+  </joint>
+
+</robot>

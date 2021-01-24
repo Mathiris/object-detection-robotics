@@ -1,0 +1,9 @@
+<launch>
+
+  <node name="roomba" pkg="mr_roomba" type="roomba" respawn="false" output="screen"/>
+
+  <node name="fake_loc" pkg="mr_control" type="fake_loc" respawn="false" output="log"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mr_roomba)/rviz/config.rviz" />
+
+</launch>

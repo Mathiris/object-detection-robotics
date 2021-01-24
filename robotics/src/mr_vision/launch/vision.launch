@@ -1,0 +1,8 @@
+<launch>
+
+
+  <node name="vision" pkg="mr_vision" type="vision.py" respawn="false" output="screen"/>
+
+  <node pkg="rqt_image_view" type="rqt_image_view" name="image_view" args="/stop_sign"/>
+
+</launch>

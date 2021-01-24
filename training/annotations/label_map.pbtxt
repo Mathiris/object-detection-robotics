@@ -1,0 +1,5 @@
+item {
+    name: "Stop_sign",
+    id: 1,
+    display_name: "Stop_sign"
+}

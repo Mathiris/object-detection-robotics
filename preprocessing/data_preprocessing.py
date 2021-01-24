@@ -8,7 +8,9 @@ DATA_DIR = WORKSPACE + "../datasets/"
 
 STOPSIGN_TRAIN_LABEL = DATA_DIR + "stop_sign/train/Label/"
 STOPSIGN_TRAIN_IMG = DATA_DIR + "stop_sign/train/"
-
+STOPSIGN_TRAIN_IMG_GREYSCALE = STOPSIGN_TRAIN_IMG +"Stop_sign_greyscale/"
+STOPSIGN_TRAIN_IMG_BLUR = STOPSIGN_TRAIN_IMG + "Stop_sign_blur/"
+STOPSIGN_TRAIN_IMG_FLIP = STOPSIGN_TRAIN_IMG + "Stop_sign_flip/"
 
 def rename_label(path_label):
     print("[!] - Processing renaming label...")
@@ -71,7 +73,19 @@ def resize_image(path_image):
     
     print("[!] - All images have been resized!")
     
-
+def data_aug (path_image, path_image_greyscale, path_image_blur, path_image_flip):
+    for element in os.listdir(path_image):
+        img = cv2.imread(path_image+'/'+element)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #element = element.replace('.jpg', '_greyscale.jpg')
+        cv2.imwrite(path_image_greyscale+'/'+element,gray)
+        img = cv2.imread(path_image+'/'+element)
+        blur = cv2.GaussianBlur(img,(5,5),2)
+        cv2.imwrite(path_image_blur+'/'+element,blur)
+        img = cv2.imread(path_image+'/'+element)
+        flipVertical = cv2.flip(img, 0)
+        cv2.imwrite(path_image_flip+'/'+element,flipVertical)
+        
 def txt_to_csv(path_image, path_label):
     """Iterates through all .txt files (get from OIDV4_Toolkit) in a given directory and combines
     them in a single Pandas dataframe.
@@ -127,6 +141,8 @@ def txt_to_csv(path_image, path_label):
 rename_label(STOPSIGN_TRAIN_LABEL)
 resize_bounding_box(STOPSIGN_TRAIN_LABEL, STOPSIGN_TRAIN_IMG)
 resize_image(STOPSIGN_TRAIN_IMG)
+data_aug(STOPSIGN_TRAIN_IMG_GREYSCALE, STOPSIGN_TRAIN_IMG_BLUR, STOPSIGN_TRAIN_IMG_FLIP)
 stopSign_df = txt_to_csv(STOPSIGN_TRAIN_IMG, STOPSIGN_TRAIN_LABEL)
+
 
 print(stopSign_df)
